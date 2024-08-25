@@ -1,0 +1,72 @@
+class Product:
+    def __init__(self, product_id, name, stock_level, reorder_point, reorder_quantity):
+        self.product_id = product_id
+        self.name = name
+        self.stock_level = stock_level
+        self.reorder_point = reorder_point
+        self.reorder_quantity = reorder_quantity
+
+class Warehouse:
+    def __init__(self, warehouse_id, location):
+        self.warehouse_id = warehouse_id
+        self.location = location
+        self.inventory = {}
+
+    def add_product(self, product):
+        self.inventory[product.product_id] = product
+
+    def update_stock(self, product_id, quantity):
+        if product_id in self.inventory:
+            self.inventory[product_id].stock_level += quantity
+
+    def check_reorder(self):
+        for product in self.inventory.values():
+            if product.stock_level < product.reorder_point:
+                self.reorder_product(product)
+
+    def reorder_product(self, product):
+        print(f"Reorder Alert: {product.name} (ID: {product.product_id}) needs to be reordered. Suggested quantity: {product.reorder_quantity}")
+
+class InventoryManagementSystem:
+    def __init__(self):
+        self.warehouses = {}
+
+    def add_warehouse(self, warehouse):
+        self.warehouses[warehouse.warehouse_id] = warehouse
+
+    def track_inventory(self):
+        for warehouse in self.warehouses.values():
+            warehouse.check_reorder()
+
+    def generate_report(self):
+        for warehouse in self.warehouses.values():
+            print(f"Inventory Report for Warehouse {warehouse.warehouse_id}:")
+            for product in warehouse.inventory.values():
+                print(f"Product: {product.name}, Stock Level: {product.stock_level}, Reorder Point: {product.reorder_point}")
+
+def get_product_info():
+    product_id = int(input("Enter Product ID: "))
+    name = input("Enter Product Name: ")
+    stock_level = int(input(f"Enter Stock Level for {name}: "))
+    reorder_point = int(input(f"Enter Reorder Point for {name}: "))
+    reorder_quantity = int(input(f"Enter Reorder Quantity for {name}: "))
+    return Product(product_id, name, stock_level, reorder_point, reorder_quantity)
+
+def main():
+    inventory_system = InventoryManagementSystem()
+
+    warehouse_id = int(input("Enter Warehouse ID: "))
+    location = input("Enter Warehouse Location: ")
+    warehouse = Warehouse(warehouse_id, location)
+    inventory_system.add_warehouse(warehouse)
+
+    num_products = int(input("How many products do you want to add? "))
+    for _ in range(num_products):
+        product = get_product_info()
+        warehouse.add_product(product)
+
+    inventory_system.track_inventory()
+    inventory_system.generate_report()
+
+if __name__ == "__main__":
+    main()
